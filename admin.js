@@ -1,5 +1,7 @@
 const express = require('express');
 const supabase = require('./supabase');
+const path = require('path');
+
 const app = express();
 
 app.use(express.json());
@@ -29,17 +31,20 @@ app.post('/login', async (req, res) => {
 // 🔐 AUTH MIDDLEWARE
 // ===============================
 app.use((req, res, next) => {
-  if (req.path === '/login') return next();
+  // allow public
+  if (req.path === '/' || req.path === '/login') {
+    return next();
+  }
 
   if (req.headers['x-auth'] !== "ADMIN123") {
-    return res.status(403).send("Unauthorized");
+    return res.status(403).json({ error: "Unauthorized" });
   }
 
   next();
 });
 
 // ===============================
-// ➕ TAMBAH LOCATION
+// ➕ LOCATION
 // ===============================
 app.post('/location', async (req, res) => {
   const { name } = req.body;
@@ -55,7 +60,7 @@ app.post('/location', async (req, res) => {
 });
 
 // ===============================
-// ➕ TAMBAH DEVICE
+// ➕ DEVICE
 // ===============================
 app.post('/device', async (req, res) => {
   const { device_id, name, location_id } = req.body;
@@ -84,7 +89,6 @@ app.get('/devices', async (req, res) => {
 // ===============================
 // 🌐 SERVE HTML
 // ===============================
-const path = require('path');
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
@@ -92,5 +96,5 @@ app.get('/', (req, res) => {
 // ===============================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log("🌐 Admin API running on port", PORT);
+  console.log("🌐 Server running on port", PORT);
 });

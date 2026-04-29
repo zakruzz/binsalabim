@@ -6,56 +6,14 @@
 <title>BinSalabim Admin</title>
 
 <style>
-body {
-  font-family: Arial;
-  background: #f4f6f9;
-  margin: 0;
-}
-
-header {
-  background: #2f80ed;
-  color: white;
-  padding: 15px;
-  text-align: center;
-}
-
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-}
-
-.card {
-  background: white;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-}
-
-button {
-  background: #2f80ed;
-  color: white;
-  padding: 10px;
-  border: none;
-  width: 100%;
-  cursor: pointer;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-td, th {
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
-}
+body { font-family: Arial; background:#f4f6f9; margin:0; }
+header { background:#2f80ed;color:white;padding:15px;text-align:center; }
+.container { max-width:900px;margin:auto;padding:20px; }
+.card { background:white;padding:20px;margin-bottom:20px;border-radius:10px; }
+input { width:100%;padding:10px;margin:8px 0; }
+button { background:#2f80ed;color:white;padding:10px;border:none;width:100%;cursor:pointer; }
+table { width:100%;border-collapse:collapse; }
+td,th { padding:8px;border-bottom:1px solid #ddd; }
 
 #loginBox {
   display:flex;
@@ -82,7 +40,10 @@ td, th {
 <!-- MAIN -->
 <div id="mainContent" style="display:none;">
 
-<header>BinSalabim Admin</header>
+<header>
+  BinSalabim Admin
+  <button onclick="logout()" style="float:right;width:auto;">Logout</button>
+</header>
 
 <div class="container">
 
@@ -123,7 +84,24 @@ td, th {
 <script>
 const API = "https://binsalabim.onrender.com";
 
+// =====================
+// INIT PAGE
+// =====================
+window.onload = () => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    loginBox.style.display = "none";
+    mainContent.style.display = "block";
+  } else {
+    loginBox.style.display = "flex";
+    mainContent.style.display = "none";
+  }
+};
+
+// =====================
 // LOGIN
+// =====================
 async function login() {
   const res = await fetch(API + "/login", {
     method: "POST",
@@ -138,26 +116,29 @@ async function login() {
     const data = await res.json();
     localStorage.setItem("token", data.token);
 
-    loginBox.style.display = "none";
-    mainContent.style.display = "block";
+    location.reload();
   } else {
     error.innerText = "Login gagal!";
   }
 }
 
-// AUTO LOGIN
-if (localStorage.getItem("token")) {
-  loginBox.style.display = "none";
-  mainContent.style.display = "block";
+// =====================
+// LOGOUT
+// =====================
+function logout() {
+  localStorage.removeItem("token");
+  location.reload();
 }
 
-// ➕ LOCATION
+// =====================
+// API FUNCTIONS
+// =====================
 async function addLocation() {
   await fetch(API + "/location", {
-    method: "POST",
-    headers: {
+    method:"POST",
+    headers:{
       "Content-Type":"application/json",
-      "x-auth": localStorage.getItem("token")
+      "x-auth":localStorage.getItem("token")
     },
     body: JSON.stringify({ name: loc_name.value })
   });
@@ -165,13 +146,12 @@ async function addLocation() {
   alert("Lokasi ditambahkan");
 }
 
-// ➕ DEVICE
 async function addDevice() {
   await fetch(API + "/device", {
-    method: "POST",
-    headers: {
+    method:"POST",
+    headers:{
       "Content-Type":"application/json",
-      "x-auth": localStorage.getItem("token")
+      "x-auth":localStorage.getItem("token")
     },
     body: JSON.stringify({
       device_id: device_id.value,
@@ -183,11 +163,10 @@ async function addDevice() {
   alert("Device ditambahkan");
 }
 
-// 📋 LOAD
 async function loadDevices() {
   const res = await fetch(API + "/devices", {
-    headers: {
-      "x-auth": localStorage.getItem("token")
+    headers:{
+      "x-auth":localStorage.getItem("token")
     }
   });
 
