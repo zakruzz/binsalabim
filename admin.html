@@ -1,38 +1,149 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+  <meta charset="UTF-8">
   <title>BinSalabim Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #2f80ed;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    button {
+      background: #2f80ed;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #1366d6;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    th {
+      background: #fafafa;
+    }
+
+    .token {
+      font-size: 12px;
+      color: gray;
+    }
+
+    @media(max-width:600px) {
+      .container {
+        padding: 10px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>Tambah Device</h2>
+<header>
+  🗑️ BinSalabim Admin Panel
+</header>
 
-<input id="device_id" placeholder="BIN_001"><br>
-<input id="name" placeholder="Nama"><br>
-<input id="location_id" placeholder="Location ID"><br>
+<div class="container">
 
-<button onclick="addDevice()">Tambah Device</button>
+  <!-- Tambah Lokasi -->
+  <div class="card">
+    <h2>📍 Tambah Lokasi</h2>
+    <input id="loc_name" placeholder="Contoh: Gedung_A">
+    <button onclick="addLocation()">Tambah Lokasi</button>
+  </div>
 
-<hr>
+  <!-- Tambah Device -->
+  <div class="card">
+    <h2>🗑️ Tambah Device</h2>
+    <input id="device_id" placeholder="Contoh: BIN_001">
+    <input id="name" placeholder="Nama (contoh: Tong Lobby)">
+    <input id="location_id" placeholder="Location ID (contoh: 1)">
+    <button onclick="addDevice()">Tambah Device</button>
+  </div>
 
-<h2>Tambah Lokasi</h2>
+  <!-- List Device -->
+  <div class="card">
+    <h2>📦 Daftar Device</h2>
+    <button onclick="loadDevices()">Load Data</button>
 
-<input id="loc_name" placeholder="Nama Lokasi"><br>
-<button onclick="addLocation()">Tambah Lokasi</button>
+    <table>
+      <thead>
+        <tr>
+          <th>Device ID</th>
+          <th>Nama</th>
+          <th>Lokasi</th>
+          <th>Token</th>
+        </tr>
+      </thead>
+      <tbody id="deviceTable"></tbody>
+    </table>
+  </div>
 
-<hr>
-
-<h2>List Device</h2>
-<button onclick="loadDevices()">Load</button>
-
-<pre id="output"></pre>
+</div>
 
 <script>
 const API = "https://binsalabim.onrender.com";
 const KEY = "12345";
 
+// ➕ Tambah Device
 async function addDevice() {
-  await fetch(API + "/device", {
+  const res = await fetch(API + "/device", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -45,9 +156,10 @@ async function addDevice() {
     })
   });
 
-  alert("Device ditambahkan!");
+  alert("✅ Device berhasil ditambahkan!");
 }
 
+// ➕ Tambah Lokasi
 async function addLocation() {
   await fetch(API + "/location", {
     method: "POST",
@@ -60,16 +172,30 @@ async function addLocation() {
     })
   });
 
-  alert("Lokasi ditambahkan!");
+  alert("📍 Lokasi berhasil ditambahkan!");
 }
 
+// 📋 Load Device
 async function loadDevices() {
   const res = await fetch(API + "/devices", {
     headers: { "x-api-key": KEY }
   });
 
   const data = await res.json();
-  output.innerText = JSON.stringify(data, null, 2);
+
+  const table = document.getElementById("deviceTable");
+  table.innerHTML = "";
+
+  data.forEach(d => {
+    table.innerHTML += `
+      <tr>
+        <td>${d.device_id}</td>
+        <td>${d.name}</td>
+        <td>${d.location_id}</td>
+        <td class="token">${d.owner_token}</td>
+      </tr>
+    `;
+  });
 }
 </script>
 
