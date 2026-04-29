@@ -2,19 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const supabase = require('./supabase');
 require('dotenv').config();
 
-console.log("BOT INIT JALAN");
-
-// 🔐 proteksi biar gak double instance
-if (!global.botInstance) {
-  global.botInstance = new TelegramBot(process.env.TELEGRAM_TOKEN, {
-    polling: true
-  });
-
-  // reset webhook (hindari conflict)
-  global.botInstance.deleteWebHook();
-}
-
-const bot = global.botInstance;
+const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
 
 module.exports = bot;
 
