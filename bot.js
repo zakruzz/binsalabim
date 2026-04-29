@@ -2,7 +2,12 @@ const TelegramBot = require('node-telegram-bot-api');
 const supabase = require('./supabase');
 require('dotenv').config();
 
-const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
+const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, {
+  polling: true
+});
+
+// reset webhook (biar bersih)
+bot.deleteWebHook();
 
 module.exports = bot;
 
