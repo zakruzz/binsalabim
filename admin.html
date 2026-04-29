@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BinSalabim Admin</title>
+</head>
+<body>
+
+<h2>Tambah Device</h2>
+
+<input id="device_id" placeholder="BIN_001"><br>
+<input id="name" placeholder="Nama"><br>
+<input id="location_id" placeholder="Location ID"><br>
+
+<button onclick="addDevice()">Tambah Device</button>
+
+<hr>
+
+<h2>Tambah Lokasi</h2>
+
+<input id="loc_name" placeholder="Nama Lokasi"><br>
+<button onclick="addLocation()">Tambah Lokasi</button>
+
+<hr>
+
+<h2>List Device</h2>
+<button onclick="loadDevices()">Load</button>
+
+<pre id="output"></pre>
+
+<script>
+const API = "http://localhost:3000";
+const KEY = "12345";
+
+async function addDevice() {
+  await fetch(API + "/device", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": KEY
+    },
+    body: JSON.stringify({
+      device_id: device_id.value,
+      name: name.value,
+      location_id: parseInt(location_id.value)
+    })
+  });
+
+  alert("Device ditambahkan!");
+}
+
+async function addLocation() {
+  await fetch(API + "/location", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": KEY
+    },
+    body: JSON.stringify({
+      name: loc_name.value
+    })
+  });
+
+  alert("Lokasi ditambahkan!");
+}
+
+async function loadDevices() {
+  const res = await fetch(API + "/devices", {
+    headers: { "x-api-key": KEY }
+  });
+
+  const data = await res.json();
+  output.innerText = JSON.stringify(data, null, 2);
+}
+</script>
+
+</body>
+</html>
